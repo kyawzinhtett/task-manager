@@ -15,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use('/api/v1/tasks', require('./routes/tasks'));
 app.use(require('./middlewares/not-found'));
+app.use(require('./middlewares/error-handler'));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

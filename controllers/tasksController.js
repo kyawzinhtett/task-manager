@@ -1,5 +1,6 @@
 const Task = require('../models/Task');
 const asyncHandler = require('../middlewares/async');
+const { createCustomError } = require('../errors/custom-error');
 
 const getAllTasks = asyncHandler(async (req, res) => {
   const tasks = await Task.find();
@@ -14,20 +15,20 @@ const createTask = asyncHandler(async (req, res) => {
   res.status(201).json({ task });
 });
 
-const getTask = asyncHandler(async (req, res) => {
+const getTask = asyncHandler(async (req, res, next) => {
   const { id: taskID } = req.params;
   const task = await Task.findOne({ _id: taskID });
 
   if (!task) {
-    return res.status(404).json({
-      message: `No task found with this id: ${taskID}`,
-    });
+    return next(
+      createCustomError(`No task found with this id: ${taskID}`, 404)
+    );
   }
 
   res.status(200).json({ task });
 });
 
-const editTask = asyncHandler(async (req, res) => {
+const editTask = asyncHandler(async (req, res, next) => {
   const { id: taskID } = req.params;
   const task = await Task.findOneAndUpdate({ _id: taskID }, req.body, {
     new: true,
@@ -35,22 +36,22 @@ const editTask = asyncHandler(async (req, res) => {
   });
 
   if (!task) {
-    return res.status(404).json({
-      message: `No task found with this id: ${taskID}`,
-    });
+    return next(
+      createCustomError(`No task found with this id: ${taskID}`, 404)
+    );
   }
 
   res.status(200).json({ task });
 });
 
-const deleteTask = asyncHandler(async (req, res) => {
+const deleteTask = asyncHandler(async (req, res, next) => {
   const { id: taskID } = req.params;
   const task = await Task.findOneAndDelete({ _id: taskID });
 
   if (!task) {
-    return res.status(404).json({
-      message: `No task found with this id: ${taskID}`,
-    });
+    return next(
+      createCustomError(`No task found with this id: ${taskID}`, 404)
+    );
   }
 
   res.status(200).json({ task });
